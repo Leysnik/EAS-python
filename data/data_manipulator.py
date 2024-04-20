@@ -1,8 +1,11 @@
+from flask_sqlalchemy import SQLAlchemy
 import pandas as pd
 import numpy as np
 import matplotlib as plt
-from flask_sqlalchemy import SQLAlchemy
 import seaborn as sns
+
+from datetime import datetime
+
 import config
 
 def getDFfromDB(operation):
@@ -15,7 +18,7 @@ def loadData(file, db):
 
 def prepareDF(df):
     df.rename(columns=config.COLUMN_NAMES, inplace=True)
-
+    df['date'] = pd.to_datetime(df['date'], dayfirst=True, format="%d.%m.%Y").dt.date
     df = df.drop(df[df["status"] == "FAILED"].index)
 
     df = df.drop(config.USELESS_COLUMNS, axis = 1)
