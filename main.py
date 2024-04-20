@@ -34,11 +34,17 @@ def load_data():
         data_manipulator.loadData(file, db)
         return redirect("/", Response=None)
         
-    
-@app.route('/download/<upload_id>')
-def download(upload_id):
-    upload = Operation.query.filter_by(id=upload_id).first()
-    return send_file(BytesIO(upload.data), download_name=upload.filename, as_attachment=True )
+@app.route('/build', methods=['GET'])
+def build_info():
+    ...
+
+@app.route('/drop', methods=['GET'])
+def drop_db():
+    db.session.commit()
+    db.drop_all()
+    db.create_all()
+    return redirect("/", Response=None)
+
 
 if __name__ == '__main__':
     app.run(HOST, PORT, debug=True,)
