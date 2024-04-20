@@ -9,7 +9,7 @@ def getDFfromDB(operation):
 def loadData(file, db):
     df = pd.read_excel(file)
     df = prepareDF(df)
-    df.to_sql("operation", con=db.engine, if_exists='append')
+    df.to_sql("operation", con=db.engine, if_exists='replace')
 
 def prepareDF(df):
     df = df.drop(df[df["Статус"] == "FAILED"].index)
