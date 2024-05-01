@@ -12,7 +12,7 @@ def getDFfromDB(db) -> pd.DataFrame:
     return pd.read_sql_table("operation", db.engine.connect())
 
 
-def loadData(file, db):
+def loadData(file, db) -> None:
     '''
     Load xlsx file to db(sql)
     '''
@@ -63,7 +63,7 @@ def last_month(df: pd.DataFrame) -> pd.DataFrame:
     mask = (df["date"] > lastOffset.date()) & (df["date"] <= last_date)
     return df[mask]
 
-def make_df_list(df: pd.DataFrame, days: int = 0) -> pd.DataFrame:
+def make_df_list(df: pd.DataFrame, days: int = 0) -> list[pd.DataFrame]:
     '''
     This function creates list of DataFrames grouped by date interval
     '''
