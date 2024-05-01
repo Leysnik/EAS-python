@@ -1,5 +1,5 @@
 body {
-    padding-top: 200px ;
+    padding-top: 100px ;
     font: 16px Aesthetic, sans-serif;
     background: #222121;
     color: #dedede;
@@ -20,11 +20,38 @@ body {
     
 }
 .cc-container form input[type=submit]{
-    width: 300px;
-    height: 50px;
+    width: 100px;
+    height: 30px;
     margin: 5px;
     border-radius: 10px;
-    background-color: antiquewhite;
+    color: rgb(255 255 255);
+	text-align: center;
+	border-radius: 4px;
+	background-color: #419152;
+	align-self: end;
+	justify-self: end;
+}
+.upload-form{
+	width:100%;
+	display: flex;
+	justify-content: center;
+	margin: 10px;
+	
+}
+.upload-form *{
+	margin: 5px;
+}
+.column{
+	flex-direction: column;
+}
+input{
+	border-width: 0;
+}
+label{
+	transition: all 0.3s;
+}
+.radio-group label:hover{
+	color: #a2a0a0;
 }
 .upload-form button {
     height : 40px;
@@ -92,4 +119,20 @@ button:hover{
 /* Disabled */
 .input-file input[type=file]:disabled + span {
 	background-color: #eee;
+}
+.radio-group{
+	display: flex;
+	flex-direction: column;
+	border-left: 1px solid;
+}
+.text-group input{
+	height: 20px;
+	width: 100px;
+	border-radius: 5px;
+	background-color: antiquewhite;
+	color:#222121;
+	transition: all 0.2s;
+}
+.text-group input:hover{
+	background-color: rgb(203, 193, 180);
 }
