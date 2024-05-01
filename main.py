@@ -1,4 +1,3 @@
-from io import BytesIO
 from flask import Flask
 from flask import render_template, send_file, request, redirect
 from config import HOST, PORT
@@ -36,6 +35,7 @@ def load_data():
         
 @app.route('/build', methods=['GET'])
 def build_info():
+    # return data_manipulator.testfunc(db, 3)
     ...
 
 @app.route('/drop', methods=['GET'])
@@ -47,4 +47,4 @@ def drop_db():
 
 
 if __name__ == '__main__':
-    app.run(HOST, PORT, debug=True,)
+    app.run(HOST, PORT, debug=True)
