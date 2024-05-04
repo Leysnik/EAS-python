@@ -63,9 +63,21 @@ def last_month(df: pd.DataFrame) -> pd.DataFrame:
     mask = (df["date"] > lastOffset.date()) & (df["date"] <= last_date)
     return df[mask]
 
+def choose_period(df: pd.DataFrame, first_date: str, last_date: str) -> pd.DataFrame:
+    '''
+    This function creates DataFrame for the choosen period
+    '''
+    first_date = pd.to_datetime(first_date, format="%d.%m.%Y").date()
+    last_date = pd.to_datetime(last_date, format="%d.%m.%Y").date()
+    mask = (df['date'] >= last_date) & (df['date'] <= first_date)
+
+    return df[mask]
+
+
 def make_df_list(df: pd.DataFrame, days: int = 0) -> list[pd.DataFrame]:
     '''
-    This function creates list of DataFrames grouped by date interval
+    This function creates list of DataFrames grouped by day interval
+        if days == 0 function groups rows by months 
     '''
     first_date = df["date"].iloc[0]
     last_date = df["date"].iloc[-1]
@@ -86,10 +98,10 @@ def make_df_list(df: pd.DataFrame, days: int = 0) -> list[pd.DataFrame]:
         iter -= offset
     return df_list
 
-    
 
-# def testfunc(db: pd.DateFrame, transfer: int):
-#     df = selectRecords(getDFfromDB(db), transfer, False)
-# #    df = df[df["category"] == "Переводы"]
-#     df = last_month(df)
-#     return df.to_json()
+
+def testfunc(db: pd.DateFrame, transfer: int):
+    df = selectRecords(getDFfromDB(db), transfer, False)
+#    df = df[df["category"] == "Переводы"]
+    df = last_month(df)
+    return df.to_json()
