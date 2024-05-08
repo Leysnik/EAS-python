@@ -1,7 +1,8 @@
 import pandas as pd
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import seaborn as sns
+import base64
 
 import config
 
@@ -67,8 +68,8 @@ def choose_period(df: pd.DataFrame, first_date: str, last_date: str) -> pd.DataF
     '''
     This function creates DataFrame for the choosen period
     '''
-    first_date = pd.to_datetime(first_date, format="%d.%m.%Y").date()
-    last_date = pd.to_datetime(last_date, format="%d.%m.%Y").date()
+    first_date = pd.to_datetime(first_date, format="%Y-%m-%d").date()
+    last_date = pd.to_datetime(last_date, format="%Y-%m-%d").date()
     mask = (df['date'] >= last_date) & (df['date'] <= first_date)
 
     return df[mask]
