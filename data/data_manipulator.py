@@ -42,7 +42,7 @@ def selectRecords(df: pd.DataFrame, transfer: int, strange_transactions: bool) -
         transfer:
             1 - keep incoming transfers
             2 - keep outgoing transfers
-            0 - drop all tranfers
+            0 - drop all transfers
         strange_tranactions:
             drop 5% most expensive and cheapes operations
     '''
@@ -98,6 +98,41 @@ def make_df_list(df: pd.DataFrame, days: int = 0) -> list[pd.DataFrame]:
         first_date -= offset
         iter -= offset
     return df_list
+
+def transactions_hist(df: pd.DataFrame):
+    '''
+    This function build the hist plot: category - sum of transactions in df
+    '''
+    categories = list(set(df["category"]))
+    oSum = []
+
+    for category in categories:
+        oSum.append(df[df["category"] == category]["oSum"].abs().sum())
+        
+    data = pd.DataFrame({"category" : categories,
+                              "sum" : oSum})
+    plt.figure()
+    fig = sns.barplot(data, x="sum", y="category")
+    plt.savefig("templates/plots/transactions_gist.png", bbox_inches="tight")
+
+def sum_list(df_list: list[pd.DataFrame]):
+    oSum = []
+    periods = []
+    for i in range(len(df_list)):
+        oSum.append(df_list[i]["oSum"].abs().sum())
+        periods.append(df_list[i]["date"].iloc[-1])
+    return periods, oSum
+
+def periods_hist(df_list: list[pd.DataFrame]):
+    '''
+    This function build hist plot: start date of df - sum of df
+    '''
+    periods, oSum = sum_list(df_list)
+    data = pd.DataFrame({ "date" : periods,
+                           "sum" : oSum})
+    plt.figure()
+    fig = sns.barplot(data, x="sum", y="date")
+    plt.savefig("templates/plots/periods_hist.png", bbox_inches="tight")
 
 
 
