@@ -15,23 +15,35 @@
           </label>
             <button>Загрузить данные</button>
         </form>
-        <form action="/build" method="GET" class="upload-form column">
-            <div class="radio-group">
+        <div class="info-bd">
+            <div class="info-element"><span>Первая дата:</span><span>None</span></div>
+            <div class="info-element"><span></span>Последняя дата:<span>None</span></div>
+        </div>
+        <form action="/build" method="GET" class="upload-form column" id="build_form">
+            <div class="select-container"><span id="list_periods">Группа периодов</span><span id="one_period">Один период</span><span id="categories">Категории</span></div>
+            <div class="radio-group" id="transfers">
                 <label for="rr1"><input id="rr1" type="radio" name="remittance" value="0" checked><span>Исключить все переводы</span></label>
                 <label for="rr2"><input id="rr2" type="radio" name="remittance" value="1"><span>Учесть входящие переводы</span></label>
                 <label for="rr3"><input id="rr3" type="radio" name="remittance" value="2"><span>Учесть исходящие переводы</span></label>
                 <label for="rr4"><input id="rr4" type="radio" name="remittance" value="3"><span>Учесть любые переводы</span></label>
             </div>
             <div class="text-group">
-                <label for="period">Введите количество дней в периоде:</label>
-                <input type="number" value="" placeholder="Количество дней в периоде:">
+                <label for="start_date">Введите начальную дату:</label>
+                <input type="date" id="start_date" name="start_date" value="" required>
+                <label for="end_date">Введите конечную дату:</label>
+                <input type="date" id="end_date" name="end_date" value="" required>
             </div>
-            <div class="radio-group">
+            <div class="text-group" id="periods_tau">
+                <label for="period">Введите количество дней в периоде:</label>
+                <input type="number" id="period" name="period" value="" placeholder="Количество дней в периоде:" required>
+            </div>
+            <div class="radio-group" id="HLoperations">
                 <label for="HLtrue"><input type="radio" name="HLoperations" id="HLtrue" value="1" checked>Учесть высокие и низкие операции</label>
                 <label for="HLfalse"><input type="radio" name="HLoperations" id="HLfalse" value="0">Исключить высокие и низкие операции</label>
             </div>
             <input type="submit" value="Построить">
         </form>
     </div>
+    <script src="../static/js/main_script.js"></script>
 </body>
 </html>

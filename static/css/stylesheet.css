@@ -136,3 +136,36 @@ button:hover{
 .text-group input:hover{
 	background-color: rgb(203, 193, 180);
 }
+.title h1{
+	border-bottom: 1px solid white;
+}
+.select-container{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+	
+}
+.select-container span{
+	padding: 2px;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.select-container span:hover{
+	border-bottom: solid 1px;
+	color:rgb(175, 175, 175);
+}
+.info-bd{
+	border-radius: 5px;
+	border: 1px solid;
+	width:100%;
+}
+.info-bd span:last-child{
+	color:#419152;
+}
+.disabled{
+	display: none !important;
+}
+.selected-type{
+	border-bottom: #2E703A 1px solid;
+}
