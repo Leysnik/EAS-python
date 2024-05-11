@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import base64
 
 import config
 
@@ -31,9 +30,7 @@ def prepareDF(df: pd.DataFrame) -> pd.DataFrame:
     df.rename(columns=config.COLUMN_NAMES, inplace=True)
     df['date'] = pd.to_datetime(df['date'], dayfirst=True, format="%d.%m.%Y").dt.date
     df = df.drop(df[df["status"] == "FAILED"].index)
-
     df = df.drop(config.USELESS_COLUMNS, axis = 1)
-    
     return df
 
 def selectRecords(df: pd.DataFrame, transfer: int, strange_transactions: bool) -> pd.DataFrame:
@@ -52,7 +49,6 @@ def selectRecords(df: pd.DataFrame, transfer: int, strange_transactions: bool) -
         df = df.drop(df[(df["category"] == "Переводы") & (df["oSum"] < 0)].index, axis=0)
     elif transfer == 0:
         df = df.drop(df[df["category"] == "Переводы"].index, axis=0)
-
     return df
 
 def last_month(df: pd.DataFrame) -> pd.DataFrame:
@@ -71,9 +67,7 @@ def choose_period(df: pd.DataFrame, first_date: str, last_date: str) -> pd.DataF
     first_date = pd.to_datetime(first_date, format="%Y-%m-%d").date()
     last_date = pd.to_datetime(last_date, format="%Y-%m-%d").date()
     mask = (df['date'] >= last_date) & (df['date'] <= first_date)
-
     return df[mask]
-
 
 def make_df_list(df: pd.DataFrame, days: int = 0) -> list[pd.DataFrame]:
     '''
@@ -90,13 +84,12 @@ def make_df_list(df: pd.DataFrame, days: int = 0) -> list[pd.DataFrame]:
     else:
         first_date = pd.Timestamp(first_date)
         offset = pd.DateOffset(days=days)
-
-    iter = first_date - offset
-    while iter.date() >= last_date:
-        mask = (df["date"] > iter.date()) & (df["date"] <= first_date.date())
+    iterator = first_date - offset
+    while iterator.date() >= last_date:
+        mask = (df["date"] > iterator.date()) & (df["date"] <= first_date.date())
         df_list.append(df[mask])
         first_date -= offset
-        iter -= offset
+        iterator -= offset
     return df_list
 
 def transactions_hist(df: pd.DataFrame):
@@ -105,14 +98,12 @@ def transactions_hist(df: pd.DataFrame):
     '''
     categories = list(set(df["category"]))
     oSum = []
-
     for category in categories:
-        oSum.append(df[df["category"] == category]["oSum"].abs().sum())
-        
+        oSum.append(df[df["category"] == category]["oSum"].abs().sum()) 
     data = pd.DataFrame({"category" : categories,
                               "sum" : oSum})
     plt.figure()
-    fig = sns.barplot(data, x="sum", y="category")
+    sns.barplot(data, x="sum", y="category")
     plt.savefig("templates/plots/transactions_gist.png", bbox_inches="tight")
 
 def sum_list(df_list: list[pd.DataFrame]):
@@ -131,7 +122,7 @@ def periods_hist(df_list: list[pd.DataFrame]):
     data = pd.DataFrame({ "date" : periods,
                            "sum" : oSum})
     plt.figure()
-    fig = sns.barplot(data, x="sum", y="date")
+    sns.barplot(data, x="sum", y="date")
     plt.savefig("templates/plots/periods_hist.png", bbox_inches="tight")
 
 
