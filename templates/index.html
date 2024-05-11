@@ -29,9 +29,9 @@
             </div>
             <div class="text-group">
                 <label for="start_date">Введите начальную дату:</label>
-                <input type="date" id="start_date" name="start_date" value="" required>
+                <input type="date" id="start_date" name="start_date" value="" min="{{ dates['end_date'] }}" max="{{ dates['start_date'] }}" required>
                 <label for="end_date">Введите конечную дату:</label>
-                <input type="date" id="end_date" name="end_date" value="" required>
+                <input type="date" id="end_date" name="end_date" value="" min="{{ dates['end_date'] }}" max="{{ dates['start_date'] }}" required>
             </div>
             <div class="text-group" id="periods_tau">
                 <label for="period">Введите количество дней в периоде:</label>
