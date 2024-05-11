@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import render_template, send_file, request, redirect
+from flask import render_template, request, redirect
 from config import HOST, PORT
 from flask_sqlalchemy import SQLAlchemy
 from data import data_manipulator
@@ -19,12 +19,17 @@ class Operation(db.Model):
     description = db.Column(db.String(100))
 
 
-
 MAIN_ROUTE = "index.html"
 
 @app.route('/')
 def index():
-    return render_template(MAIN_ROUTE)
+    dates = {"start_date" : "None",
+             "end_date" : "None"}
+    if db.session.query(Operation).first():
+        dates["start_date"] = str(db.session.query(Operation).first().date)
+        dates["end_date"] = str(db.session.query(Operation).order_by(Operation.index.desc()).first().date)
+        print(dates)
+    return render_template(MAIN_ROUTE, dates=dates)
 
 @app.route('/load_data', methods=['POST'])
 def load_data():
@@ -35,8 +40,7 @@ def load_data():
         
 @app.route('/build', methods=['GET'])
 def build_info():
-    # return data_manipulator.testfunc(db, 3)
-    ...
+    return data_manipulator.testfunc(db, 3)
 
 @app.route('/drop', methods=['GET'])
 def drop_db():

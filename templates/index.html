@@ -16,8 +16,8 @@
             <button>Загрузить данные</button>
         </form>
         <div class="info-bd">
-            <div class="info-element"><span>Первая дата:</span><span>None</span></div>
-            <div class="info-element"><span></span>Последняя дата:<span>None</span></div>
+            <div class="info-element"><span>Первая дата: </span><span>{{ dates["start_date"] }}</span></div>
+            <div class="info-element"><span></span>Последняя дата: <span>{{ dates["end_date"] }}</span></div>
         </div>
         <form action="/build" method="GET" class="upload-form column" id="build_form">
             <div class="select-container"><span id="list_periods">Группа периодов</span><span id="one_period">Один период</span><span id="categories">Категории</span></div>
