@@ -1,5 +1,5 @@
 /instance
-/templates/plots/
+/static/plots/
 .vscode
 
 # Byte-compiled / optimized / DLL files

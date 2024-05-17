@@ -169,3 +169,63 @@ button:hover{
 .selected-type{
 	border-bottom: #2E703A 1px solid;
 }
+
+table {
+	border-collapse: collapse;
+	border: 2px solid rgb(140 140 140);
+	font-family: sans-serif;
+	font-size: 0.8rem;
+	letter-spacing: 1px;
+  }
+  
+  caption {
+	caption-side: bottom;
+	padding: 10px;
+	font-weight: bold;
+  }
+  
+  thead,
+  tfoot {
+	background-color: rgb(44, 45, 45);
+  }
+  
+  th,
+  td {
+	border: 1px solid rgb(76, 76, 76);
+	padding: 8px 10px;
+  }
+  
+  td:last-of-type {
+	text-align: center;
+  }
+  
+  tbody > tr:nth-of-type(even) {
+	background-color: rgb(76, 76, 76);
+  }
+  
+  tfoot th {
+	text-align: right;
+  }
+  
+  tfoot td {
+	font-weight: bold;
+  }
+
+.wrapper{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.subtitle{
+	font-weight: 700;
+	font-size: larger;
+}
+.plots  img{
+	max-width: 500px;
+}
+.plots *{
+	margin-top: 10px;
+}
+.err-msg{
+	color: rgb(182, 3, 3);
+}

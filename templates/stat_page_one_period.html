@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Анализ трат и расходов</title>
+    <link rel="stylesheet" href="../static/css/stylesheet.css">
+</head>
+<body>
+    <div class="cc-container">
+        <div class="title"><h1>Статистика</h1></div>
+        <div class="wrapper">
+            <div class="stat-table">
+                <table>
+                    <caption>Справочная информация</caption>
+                    <thead>
+                        <tr>
+                            <th>Характеристика</th>
+                            <th>Значение</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>Сумма трат</th>
+                            <td> {{ data["sum"] }} </td>
+                        </tr>
+                        <tr>
+                            <th>Средняя операция</th>
+                            <td> {{ data["mean"] }} </td>
+                        </tr>
+                        <tr>
+                            <th>Медианная операция</th>
+                            <td> {{ data["median"] }} </td>
+                        </tr>
+                        <tr>
+                            <th>Ваши бонусы</th>
+                            <td> {{ data["bonus"] }} </td>
+                        </tr>
+                        <tr>
+                            <th>Пополнения на счет</th>
+                            <td> {{ data["income"] }} </td>
+                        </tr>
+                        <tr>
+                            <th>Входящие переводы</th>
+                            <td> {{ data["trans_plus"] }} </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="plots-container wrapper">
+                <div class="subtitle"><span>Графики</span></div>
+                <div class="plots">
+                    <div><img src="../static/plots/transactions_hist.png" alt="one_period"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
