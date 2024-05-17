@@ -9,7 +9,9 @@ def getDFfromDB(db) -> pd.DataFrame:
     '''
     get db(sql) data to pandas DataFrame
     '''
-    return pd.read_sql_table("operation", db.engine.connect())
+    df = pd.read_sql_table("operation", db.engine.connect())
+    df['date'] = pd.to_datetime(df['date']).dt.date
+    return df
 
 
 def loadData(file, db) -> None:
@@ -29,8 +31,8 @@ def prepareDF(df: pd.DataFrame) -> pd.DataFrame:
     '''
     df.rename(columns=config.COLUMN_NAMES, inplace=True)
     df['date'] = pd.to_datetime(df['date'], dayfirst=True, format="%d.%m.%Y").dt.date
-    df = df.drop(df[df["status"] == "FAILED"].index)
-    df = df.drop(config.USELESS_COLUMNS, axis = 1)
+    df.drop(df[df["status"] == "FAILED"].index, inplace=True)
+    df.drop(config.USELESS_COLUMNS, axis = 1, inplace=True)
     return df
 
 def selectRecords(df: pd.DataFrame, transfer: int, strange_transactions: bool) -> pd.DataFrame:
@@ -43,13 +45,18 @@ def selectRecords(df: pd.DataFrame, transfer: int, strange_transactions: bool) -
         strange_tranactions:
             drop 5% most expensive and cheapes operations
     '''
-    if transfer == 2:
-        df = df.drop(df[(df["category"] == "Переводы") & (df["oSum"] > 0)].index, axis=0)
-    elif transfer == 1:
-        df = df.drop(df[(df["category"] == "Переводы") & (df["oSum"] < 0)].index, axis=0)
-    elif transfer == 0:
-        df = df.drop(df[df["category"] == "Переводы"].index, axis=0)
-    return df
+    data = dict()
+    data["trans_plus"] = df[(df["category"] != "Переводы") & (df["oSum"] > 0)].loc[:, "oSum"].sum()
+    data["income"] = df[df["category"] == "Пополнения"].loc[:, "oSum"].sum()
+    df.drop(df[(df["category"] == "Переводы") & (df["oSum"] > 0)].index, axis=0, inplace=True)
+    if transfer == 0:
+        df.drop(df[df["category"] == "Переводы"].index, axis=0, inplace=True)
+
+    #TODO drop HL operations
+    df.drop(df[df["category"] == "Пополнения"].index, axis=0, inplace=True)
+    df.drop(df[df["category"] == "Бонусы"].index, axis=0, inplace=True)
+    df["oSum"] = df["oSum"].abs()
+    return df, data
 
 def last_month(df: pd.DataFrame) -> pd.DataFrame:
     '''
@@ -104,7 +111,7 @@ def transactions_hist(df: pd.DataFrame):
                               "sum" : oSum})
     plt.figure()
     sns.barplot(data, x="sum", y="category")
-    plt.savefig("templates/plots/transactions_gist.png", bbox_inches="tight")
+    plt.savefig("static/plots/transactions_hist.png", bbox_inches="tight")
 
 def sum_list(df_list: list[pd.DataFrame]):
     oSum = []
@@ -123,11 +130,23 @@ def periods_hist(df_list: list[pd.DataFrame]):
                            "sum" : oSum})
     plt.figure()
     sns.barplot(data, x="sum", y="date")
-    plt.savefig("templates/plots/periods_hist.png", bbox_inches="tight")
+    plt.savefig("static/plots/periods_hist.png", bbox_inches="tight")
 
+def build_one_period(db, start_date: str, end_date: str, strange_operations: int, transfers: int) -> dict:
+    df = getDFfromDB(db)
+    df = choose_period(df, end_date, start_date)
+    bonus = df[df["category"] == "Бонусы"].loc[: , "oSum"].sum()
+    df, data = selectRecords(df, transfers, strange_operations)
+    data["bonus"] = bonus
+    if len(df.index) == 1:
+        return -1
+    data["sum"] = df["oSum"].sum()
+    data["mean"] = round(df["oSum"].mean(), 2)
+    data["median"] = round(df["oSum"].median(), 2)
+    transactions_hist(df)
+    return data
 
-
-def testfunc(db: pd.DateFrame, transfer: int):
+def testfunc(db: pd.DataFrame, transfer: int):
     df = selectRecords(getDFfromDB(db), transfer, False)
 #    df = df[df["category"] == "Переводы"]
     df = last_month(df)

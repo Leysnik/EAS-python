@@ -20,6 +20,8 @@ class Operation(db.Model):
 
 
 MAIN_ROUTE = "index.html"
+ONE_PERIOD_ROUTE = "stat_page_one_period.html"
+EMPTY_DF_ROUTE = "error.html"
 
 @app.route('/')
 def index():
@@ -48,6 +50,17 @@ def drop_db():
     db.drop_all()
     db.create_all()
     return redirect("/", Response=None)
+
+@app.route('/build_one_period', methods=['GET'])
+def one_period():
+    start_date = request.args.get("start_date")
+    end_date = request.args.get("end_date")
+    transactions = int(request.args.get("remittance"))
+    strange_operations = request.args.get("HLoperations")
+    data = data_manipulator.build_one_period(db, start_date, end_date, strange_operations, transactions)
+    if data == -1:
+        return render_template(EMPTY_DF_ROUTE)
+    return render_template(ONE_PERIOD_ROUTE, data=data)
 
 
 if __name__ == '__main__':
