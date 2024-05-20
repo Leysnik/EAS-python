@@ -21,6 +21,7 @@ class Operation(db.Model):
 
 MAIN_ROUTE = "index.html"
 ONE_PERIOD_ROUTE = "stat_page_one_period.html"
+GROUP_PERIOD_ROUTE = "stat_page_group.html"
 EMPTY_DF_ROUTE = "error.html"
 
 @app.route('/')
@@ -62,6 +63,17 @@ def one_period():
         return render_template(EMPTY_DF_ROUTE)
     return render_template(ONE_PERIOD_ROUTE, data=data)
 
+@app.route('/build_list_period', methods=['GET'])
+def group_period():
+    start_date = request.args.get("start_date")
+    end_date = request.args.get("end_date")
+    transactions = int(request.args.get("remittance"))
+    strange_operations = request.args.get("HLoperations")
+    period = int(request.args.get("period"))
+    data = data_manipulator.build_group_period(db, start_date, end_date, strange_operations, transactions, period)
+    if data == -1:
+        return render_template(EMPTY_DF_ROUTE)
+    return render_template(GROUP_PERIOD_ROUTE, data_list=data)
 
 if __name__ == '__main__':
     app.run(HOST, PORT, debug=True)
