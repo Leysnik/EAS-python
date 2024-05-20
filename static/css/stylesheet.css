@@ -11,7 +11,7 @@ body {
 .cc-container{
     display: flex;
     flex-direction: column;
-    max-width: 50%;
+    max-width: 70%;
     border:#a2a0a0 1px solid;
     border-radius: 5px;
     padding: 5px;
@@ -224,8 +224,35 @@ table {
 	max-width: 500px;
 }
 .plots *{
-	margin-top: 10px;
+	margin: 10px;
 }
 .err-msg{
 	color: rgb(182, 3, 3);
 }
+.plots{
+	overflow-x: auto;
+	max-width: 700px;
+	display: flex;
+	flex-direction: row;
+	/* scrollbar-color: rgb(203, 203, 203) rgb(46, 46, 46);
+    scrollbar-width: thin; */
+
+}
+.plot-container{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.plots::-webkit-scrollbar {
+	width: 8px;               /* ширина scrollbar */
+  }
+  .plots::-webkit-scrollbar-track {
+	background: rgb(46, 46, 46);        /* цвет дорожки */
+	border-radius: 20px;
+  }
+  .plots::-webkit-scrollbar-thumb {
+	background-color: rgb(203, 203, 203);    /* цвет плашки */
+	border-radius: 20px;       /* закругления плашки */
+	border: 1px solid rgb(133, 133, 133);  /* padding вокруг плашки */
+  }
