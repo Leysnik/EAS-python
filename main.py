@@ -57,7 +57,7 @@ def one_period():
     start_date = request.args.get("start_date")
     end_date = request.args.get("end_date")
     transactions = int(request.args.get("remittance"))
-    strange_operations = request.args.get("HLoperations")
+    strange_operations = request.args.get("HLoperations") == "0"
     data = data_manipulator.build_one_period(db, start_date, end_date, strange_operations, transactions)
     if data == -1:
         return render_template(EMPTY_DF_ROUTE)
@@ -68,7 +68,7 @@ def group_period():
     start_date = request.args.get("start_date")
     end_date = request.args.get("end_date")
     transactions = int(request.args.get("remittance"))
-    strange_operations = request.args.get("HLoperations")
+    strange_operations = request.args.get("HLoperations") == "0"
     period = int(request.args.get("period"))
     data = data_manipulator.build_group_period(db, start_date, end_date, strange_operations, transactions, period)
     if data == -1:

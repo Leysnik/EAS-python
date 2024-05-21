@@ -51,7 +51,8 @@ def selectRecords(df: pd.DataFrame, transfer: int, strange_transactions: bool=Tr
     if transfer == 0:
         df.drop(df[df["category"] == "Переводы"].index, axis=0, inplace=True)
 
-    #TODO drop HL operations
+    if strange_transactions:
+        df = df[(df["oSum"] < df["oSum"].quantile(.95)) & (df["oSum"] > df["oSum"].quantile(.05))]
     df.drop(df[df["category"] == "Пополнения"].index, axis=0, inplace=True)
     df.drop(df[df["category"] == "Бонусы"].index, axis=0, inplace=True)
     df["oSum"] = df["oSum"].abs()
@@ -156,6 +157,8 @@ def build_group_period(db, start_date: str, end_date: str, strange_operations: i
     df_list = make_df_list(df, period)
     data_list = []
     data_list.append(dict())
+    data_list[0] = info_with_stat_period(df, strange_operations, transfers, 0)
+    periods_hist(df_list)
     plot = 1
     for i in range(len(df_list)):
         data = info_with_stat_period(df_list[i], strange_operations, transfers, plot)
@@ -164,12 +167,5 @@ def build_group_period(db, start_date: str, end_date: str, strange_operations: i
         data["plot"] = plot
         plot += 1
         data_list.append(data)
-    data_list[0] = info_with_stat_period(df, strange_operations, transfers, 0)
-    periods_hist(df_list)
     return data_list
 
-def testfunc(db: pd.DataFrame, transfer: int):
-    df = selectRecords(getDFfromDB(db), transfer, False)
-#    df = df[df["category"] == "Переводы"]
-    df = last_month(df)
-    return df.to_json()
