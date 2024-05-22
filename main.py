@@ -31,7 +31,8 @@ def index():
              "end_date" : "None"}
     if db.session.query(Operation).first():
         data["start_date"] = str(db.session.query(Operation).first().date)
-        data["end_date"] = str(db.session.query(Operation).order_by(Operation.index.desc()).first().date)
+        data["end_date"] = str(db.session.query(Operation).order_by(Operation.index.desc())
+                               .first().date)
         categories = map(lambda x: x[0], db.session.query(Operation.category).distinct())
         data["categories"] = categories
     return render_template(MAIN_ROUTE, data=data)
@@ -41,7 +42,7 @@ def load_data():
     if request.method == 'POST':
         file = request.files['file']
         data_manipulator.load_data(file, db)
-        return redirect("/", Response=None)
+    return redirect("/", Response=None)
 
 @app.route('/drop', methods=['GET'])
 def drop_db():
@@ -56,7 +57,8 @@ def one_period():
     end_date = request.args.get("end_date")
     transactions = int(request.args.get("remittance"))
     strange_operations = request.args.get("HLoperations") == "0"
-    data = data_manipulator.build_one_period(db, start_date, end_date, strange_operations, transactions)
+    data = data_manipulator.build_one_period(db, start_date, end_date, 
+                                             strange_operations, transactions)
     if data == -1:
         return render_template(EMPTY_DF_ROUTE)
     return render_template(ONE_PERIOD_ROUTE, data=data)
@@ -70,7 +72,8 @@ def group_period():
     transactions = int(request.args.get("remittance"))
     strange_operations = request.args.get("HLoperations") == "0"
     period = int(request.args.get("period"))
-    data = data_manipulator.build_group_period(db, start_date, end_date, strange_operations, transactions, period)
+    data = data_manipulator.build_group_period(db, start_date, end_date, 
+                                               strange_operations, transactions, period)
     if data == -1:
         return render_template(EMPTY_DF_ROUTE)
     return render_template(GROUP_PERIOD_ROUTE, data_list=data)
@@ -83,7 +86,8 @@ def category_period():
         return render_template(EMPTY_DF_ROUTE)
     strange_operations = request.args.get("HLoperations") == "0"
     category = request.args.get("category")
-    data = data_manipulator.build_category(db, start_date, end_date, strange_operations, category=category)
+    data = data_manipulator.build_category(db, start_date, end_date, 
+                                           strange_operations, category=category)
     if data == -1:
         return render_template(EMPTY_DF_ROUTE)
     return render_template(CATEGORY_ROUTE, data=data)
