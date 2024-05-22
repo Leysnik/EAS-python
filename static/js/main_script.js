@@ -40,9 +40,9 @@ categories_btn.addEventListener("click", (event) => {
     list_period_btn.classList.remove("selected-type");
     categories_btn.classList.add("selected-type");
 
-    periods_tau.classList.remove("disabled");
-    transfers.classList.remove("disabled");
-    hlOperations.classList.add("disabled")
+    periods_tau.classList.add("disabled");
+    transfers.classList.add("disabled");
+    hlOperations.classList.remove("disabled")
     category.classList.remove("disabled");
     form.action = "/build_categories";
 });
