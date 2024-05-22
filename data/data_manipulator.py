@@ -102,35 +102,19 @@ def make_df_list(df: pd.DataFrame, days: int = 0) -> list[pd.DataFrame]:
         iterator -= offset
     return df_list
 
-def transactions_hist(df: pd.DataFrame, index: int):
-    '''
-    This function build the hist plot: category - sum of transactions in df
-    '''
-    categories = list(set(df["category"]))
-    osum = []
-    for category in categories:
-        osum.append(df[df["category"] == category]["oSum"].abs().sum())
-    data = pd.DataFrame({"category" : categories,
-                              "sum" : osum})
-    plt.figure()
-    sns.barplot(data, x="sum", y="category")
-    plt.savefig("static/plots/transactions_hist" + str(index) + ".png", bbox_inches="tight")
-
-## well, it actually can be one function wiht previous
-def category_hist(df: pd.DataFrame):
+def category_hist(df: pd.DataFrame, search: str, index: int):
     '''
     This function build the hist plot: magazin - sum of transactions in df
     '''
-    magazins = list(set(df["description"]))
+    search_list = list(set(df[search]))
     osum = []
-    for magazin in magazins:
-        osum.append(df[df["description"] == magazin]["oSum"].abs().sum())
-    data = pd.DataFrame({"magazin" : magazins,
+    for iterator in search_list:
+        osum.append(df[df[search] == iterator]["oSum"].abs().sum())
+    data = pd.DataFrame({search: search_list,
                               "sum" : osum})
     plt.figure()
-    sns.barplot(data, x="sum", y="magazin")
-    plt.savefig("static/plots/category_hist.png", bbox_inches="tight")
-
+    sns.barplot(data, x="sum", y=search)
+    plt.savefig("static/plots/transactions_hist" + str(index) + ".png", bbox_inches="tight")
 
 def sum_list(df_list: list[pd.DataFrame]):
     '''
@@ -155,7 +139,7 @@ def periods_hist(df_list: list[pd.DataFrame]):
     plt.savefig("static/plots/periods_hist.png", bbox_inches="tight")
 
 def info_with_stat_period(df: pd.DataFrame, strange_operations: bool, transfers: int,
-                          plot: int, category: str = None) -> dict:
+                          plot: int = 0, category: str = None) -> dict:
     '''
     Support func to build data dict and plots for routes
     '''
@@ -164,15 +148,15 @@ def info_with_stat_period(df: pd.DataFrame, strange_operations: bool, transfers:
     data["bonus"] = bonus
     if len(df.index) == 0:
         return -1
-    data["sum"] = df["oSum"].sum()
+    data["sum"] = round(df["oSum"].sum(), 2)
     data["mean"] = round(df["oSum"].mean(), 2)
     data["median"] = round(df["oSum"].median(), 2)
     data["end_period"] = df["date"].iloc[0]
     data["start_period"] = df["date"].iloc[-1]
     if category:
-        category_hist(df)
+        category_hist(df, "description", plot)
     else:
-        transactions_hist(df, plot)
+        category_hist(df, "category", plot)
     return data
 
 def build_one_period(db, start_date: str, end_date: str, strange_operations: int,
