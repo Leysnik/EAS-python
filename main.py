@@ -40,12 +40,8 @@ def index():
 def load_data():
     if request.method == 'POST':
         file = request.files['file']
-        data_manipulator.loadData(file, db)
+        data_manipulator.load_data(file, db)
         return redirect("/", Response=None)
-        
-@app.route('/build', methods=['GET'])
-def build_info():
-    return data_manipulator.testfunc(db, 3)
 
 @app.route('/drop', methods=['GET'])
 def drop_db():
@@ -69,6 +65,8 @@ def one_period():
 def group_period():
     start_date = request.args.get("start_date")
     end_date = request.args.get("end_date")
+    if end_date < start_date:
+        return render_template(EMPTY_DF_ROUTE)
     transactions = int(request.args.get("remittance"))
     strange_operations = request.args.get("HLoperations") == "0"
     period = int(request.args.get("period"))
@@ -81,6 +79,8 @@ def group_period():
 def category_period():
     start_date = request.args.get("start_date")
     end_date = request.args.get("end_date")
+    if end_date < start_date:
+        return render_template(EMPTY_DF_ROUTE)
     strange_operations = request.args.get("HLoperations") == "0"
     category = request.args.get("category")
     data = data_manipulator.build_category(db, start_date, end_date, strange_operations, category=category)

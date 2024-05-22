@@ -1,11 +1,10 @@
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 import config
 
-def getDFfromDB(db) -> pd.DataFrame:
+def get_df_from_db(db) -> pd.DataFrame:
     '''
     get db(sql) data to pandas DataFrame
     '''
@@ -14,15 +13,15 @@ def getDFfromDB(db) -> pd.DataFrame:
     return df
 
 
-def loadData(file, db) -> None:
+def load_data(file, db) -> None:
     '''
     Load xlsx file to db(sql)
     '''
     df = pd.read_excel(file)
-    df = prepareDF(df)
+    df = prepare_df(df)
     df.to_sql("operation", con=db.engine, if_exists='replace')
 
-def prepareDF(df: pd.DataFrame) -> pd.DataFrame:
+def prepare_df(df: pd.DataFrame) -> pd.DataFrame:
     '''
     This function prepare DataFrame for entry the db:
         Rename columns to valid names
@@ -35,7 +34,8 @@ def prepareDF(df: pd.DataFrame) -> pd.DataFrame:
     df.drop(config.USELESS_COLUMNS, axis = 1, inplace=True)
     return df
 
-def selectRecords(df: pd.DataFrame, transfer: int, strange_transactions: bool=True, category: str = None) -> pd.DataFrame:
+def select_records(df: pd.DataFrame, transfer: int,
+                  strange_transactions: bool=True, category: str = None) -> pd.DataFrame:
     '''
     Select rows by parameters:
         transfer:
@@ -44,7 +44,7 @@ def selectRecords(df: pd.DataFrame, transfer: int, strange_transactions: bool=Tr
         strange_tranactions:
             drop 5% most expensive and cheapest operations
     '''
-    data = dict()
+    data = {}
     if category:
         df.drop(df[df["category"] != category].index, axis=0, inplace=True)
     else:
@@ -66,8 +66,8 @@ def last_month(df: pd.DataFrame) -> pd.DataFrame:
     This function creates DataFrame for the last month 
     '''
     last_date = df["date"].iloc[0]
-    lastOffset = last_date - pd.DateOffset(days=last_date.day)
-    mask = (df["date"] > lastOffset.date()) & (df["date"] <= last_date)
+    last_offset = last_date - pd.DateOffset(days=last_date.day)
+    mask = (df["date"] > last_offset.date()) & (df["date"] <= last_date)
     return df[mask]
 
 def choose_period(df: pd.DataFrame, first_date: str, last_date: str) -> pd.DataFrame:
@@ -107,11 +107,11 @@ def transactions_hist(df: pd.DataFrame, index: int):
     This function build the hist plot: category - sum of transactions in df
     '''
     categories = list(set(df["category"]))
-    oSum = []
+    osum = []
     for category in categories:
-        oSum.append(df[df["category"] == category]["oSum"].abs().sum()) 
+        osum.append(df[df["category"] == category]["oSum"].abs().sum())
     data = pd.DataFrame({"category" : categories,
-                              "sum" : oSum})
+                              "sum" : osum})
     plt.figure()
     sns.barplot(data, x="sum", y="category")
     plt.savefig("static/plots/transactions_hist" + str(index) + ".png", bbox_inches="tight")
@@ -122,40 +122,41 @@ def category_hist(df: pd.DataFrame):
     This function build the hist plot: magazin - sum of transactions in df
     '''
     magazins = list(set(df["description"]))
-    oSum = []
+    osum = []
     for magazin in magazins:
-        oSum.append(df[df["description"] == magazin]["oSum"].abs().sum()) 
+        osum.append(df[df["description"] == magazin]["oSum"].abs().sum())
     data = pd.DataFrame({"magazin" : magazins,
-                              "sum" : oSum})
+                              "sum" : osum})
     plt.figure()
     sns.barplot(data, x="sum", y="magazin")
     plt.savefig("static/plots/category_hist.png", bbox_inches="tight")
 
 
 def sum_list(df_list: list[pd.DataFrame]):
-    oSum = []
+    osum = []
     periods = []
     for i in range(len(df_list)):
-        oSum.append(df_list[i]["oSum"].abs().sum())
+        osum.append(df_list[i]["oSum"].abs().sum())
         periods.append(df_list[i]["date"].iloc[-1])
-    return periods, oSum
+    return periods, osum
 
 def periods_hist(df_list: list[pd.DataFrame]):
     '''
     This function build hist plot: start date of df - sum of df
     '''
-    periods, oSum = sum_list(df_list)
+    periods, osum = sum_list(df_list)
     data = pd.DataFrame({ "date" : periods,
-                           "sum" : oSum})
+                           "sum" : osum})
     plt.figure()
     sns.barplot(data, x="sum", y="date")
     plt.savefig("static/plots/periods_hist.png", bbox_inches="tight")
 
-def info_with_stat_period(df: pd.DataFrame, strange_operations: bool, transfers: int, plot: int, category: str = None) -> dict:
+def info_with_stat_period(df: pd.DataFrame, strange_operations: bool, transfers: int,
+                          plot: int, category: str = None) -> dict:
     bonus = df[df["category"] == "Бонусы"].loc[: , "oSum"].sum()
-    df, data = selectRecords(df, transfers, strange_operations, category=category)
+    df, data = select_records(df, transfers, strange_operations, category=category)
     data["bonus"] = bonus
-    if len(df.index) == 1:
+    if len(df.index) == 0:
         return -1
     data["sum"] = df["oSum"].sum()
     data["mean"] = round(df["oSum"].mean(), 2)
@@ -168,17 +169,21 @@ def info_with_stat_period(df: pd.DataFrame, strange_operations: bool, transfers:
         transactions_hist(df, plot)
     return data
 
-def build_one_period(db, start_date: str, end_date: str, strange_operations: int, transfers: int) -> dict:
-    df = getDFfromDB(db)
+def build_one_period(db, start_date: str, end_date: str, strange_operations: int,
+                     transfers: int) -> dict:
+    df = get_df_from_db(db)
     df = choose_period(df, end_date, start_date)
     return info_with_stat_period(df, strange_operations, transfers, 0)
 
-def build_group_period(db, start_date: str, end_date: str, strange_operations: bool, transfers: int, period: int) -> dict:
-    df = getDFfromDB(db)
+def build_group_period(db, start_date: str, end_date: str, strange_operations: bool,
+                       transfers: int, period: int) -> dict:
+    df = get_df_from_db(db)
     df = choose_period(df, end_date, start_date)
+    if len(df.index) == 0:
+        return -1
     df_list = make_df_list(df, period)
     data_list = []
-    data_list.append(dict())
+    data_list.append({})
     data_list[0] = info_with_stat_period(df, strange_operations, transfers, 0)
     periods_hist(df_list)
     plot = 1
@@ -192,7 +197,7 @@ def build_group_period(db, start_date: str, end_date: str, strange_operations: b
     return data_list
 
 def build_category(db, start_date: str, end_date: str, strange_operations: bool, category: str) -> dict:
-    df = getDFfromDB(db)
+    df = get_df_from_db(db)
     df = choose_period(df, end_date, start_date)
     data = info_with_stat_period(df, strange_operations, 0, 0, category=category)
     return data
