@@ -22,6 +22,7 @@ class Operation(db.Model):
 MAIN_ROUTE = "index.html"
 ONE_PERIOD_ROUTE = "stat_page_one_period.html"
 GROUP_PERIOD_ROUTE = "stat_page_group.html"
+CATEGORY_ROUTE = "stat_category.html"
 EMPTY_DF_ROUTE = "error.html"
 
 @app.route('/')
@@ -85,7 +86,7 @@ def category_period():
     data = data_manipulator.build_category(db, start_date, end_date, strange_operations, category=category)
     if data == -1:
         return render_template(EMPTY_DF_ROUTE)
-    return render_template(GROUP_PERIOD_ROUTE, data_list=data)
+    return render_template(CATEGORY_ROUTE, data=data)
 
 if __name__ == '__main__':
     app.run(HOST, PORT, debug=True)

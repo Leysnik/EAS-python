@@ -46,7 +46,7 @@ def selectRecords(df: pd.DataFrame, transfer: int, strange_transactions: bool=Tr
     '''
     data = dict()
     if category:
-        df.drop(df[df["category"] != category], axis=0, inplace=True)
+        df.drop(df[df["category"] != category].index, axis=0, inplace=True)
     else:
         data["trans_plus"] = df[(df["category"] == "Переводы") & (df["oSum"] > 0)].loc[:, "oSum"].sum()
         data["income"] = df[df["category"] == "Пополнения"].loc[:, "oSum"].sum()
@@ -191,9 +191,8 @@ def build_group_period(db, start_date: str, end_date: str, strange_operations: b
         data_list.append(data)
     return data_list
 
-def build_category(db, start_date: str, end_date: str, strange_operations: bool, transfers: int, category: str) -> dict:
+def build_category(db, start_date: str, end_date: str, strange_operations: bool, category: str) -> dict:
     df = getDFfromDB(db)
     df = choose_period(df, end_date, start_date)
-    df, data = selectRecords(df, 0, strange_operations, category=category)
-    data = info_with_stat_period(df, category=category)
+    data = info_with_stat_period(df, strange_operations, 0, 0, category=category)
     return data
