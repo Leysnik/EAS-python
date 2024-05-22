@@ -26,13 +26,14 @@ EMPTY_DF_ROUTE = "error.html"
 
 @app.route('/')
 def index():
-    dates = {"start_date" : "None",
+    data = {"start_date" : "None",
              "end_date" : "None"}
     if db.session.query(Operation).first():
-        dates["start_date"] = str(db.session.query(Operation).first().date)
-        dates["end_date"] = str(db.session.query(Operation).order_by(Operation.index.desc()).first().date)
-        print(dates)
-    return render_template(MAIN_ROUTE, dates=dates)
+        data["start_date"] = str(db.session.query(Operation).first().date)
+        data["end_date"] = str(db.session.query(Operation).order_by(Operation.index.desc()).first().date)
+        categories = map(lambda x: x[0], db.session.query(Operation.category).distinct())
+        data["categories"] = categories
+    return render_template(MAIN_ROUTE, data=data)
 
 @app.route('/load_data', methods=['POST'])
 def load_data():
@@ -71,6 +72,17 @@ def group_period():
     strange_operations = request.args.get("HLoperations") == "0"
     period = int(request.args.get("period"))
     data = data_manipulator.build_group_period(db, start_date, end_date, strange_operations, transactions, period)
+    if data == -1:
+        return render_template(EMPTY_DF_ROUTE)
+    return render_template(GROUP_PERIOD_ROUTE, data_list=data)
+
+@app.route('/build_categories', methods=['GET'])
+def category_period():
+    start_date = request.args.get("start_date")
+    end_date = request.args.get("end_date")
+    strange_operations = request.args.get("HLoperations") == "0"
+    category = request.args.get("category")
+    data = data_manipulator.build_category(db, start_date, end_date, strange_operations, category=category)
     if data == -1:
         return render_template(EMPTY_DF_ROUTE)
     return render_template(GROUP_PERIOD_ROUTE, data_list=data)

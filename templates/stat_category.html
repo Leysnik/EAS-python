@@ -33,18 +33,6 @@
                             <th>Медианная операция</th>
                             <td> {{ data["median"] }} </td>
                         </tr>
-                        <tr>
-                            <th>Ваши бонусы</th>
-                            <td> {{ data["bonus"] }} </td>
-                        </tr>
-                        <tr>
-                            <th>Пополнения на счет</th>
-                            <td> {{ data["income"] }} </td>
-                        </tr>
-                        <tr>
-                            <th>Входящие переводы</th>
-                            <td> {{ data["trans_plus"] }} </td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -52,7 +40,7 @@
                 <div class="subtitle"><span>Графики</span></div>
                 <div class="plots">
                     <div class="plots-container wrapper">
-                        <img src="../static/plots/transactions_hist0.png" alt="one_period">
+                        <img src="../static/plots/category_hist.png" alt="cateogory">
                         <span>Период: {{ data["start_period"] }} - {{ data["end_period"] }}</span>
                     </div>
                 </div>

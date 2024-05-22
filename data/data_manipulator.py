@@ -35,7 +35,7 @@ def prepareDF(df: pd.DataFrame) -> pd.DataFrame:
     df.drop(config.USELESS_COLUMNS, axis = 1, inplace=True)
     return df
 
-def selectRecords(df: pd.DataFrame, transfer: int, strange_transactions: bool=True) -> pd.DataFrame:
+def selectRecords(df: pd.DataFrame, transfer: int, strange_transactions: bool=True, category: str = None) -> pd.DataFrame:
     '''
     Select rows by parameters:
         transfer:
@@ -45,16 +45,19 @@ def selectRecords(df: pd.DataFrame, transfer: int, strange_transactions: bool=Tr
             drop 5% most expensive and cheapest operations
     '''
     data = dict()
-    data["trans_plus"] = df[(df["category"] == "Переводы") & (df["oSum"] > 0)].loc[:, "oSum"].sum()
-    data["income"] = df[df["category"] == "Пополнения"].loc[:, "oSum"].sum()
-    df.drop(df[(df["category"] == "Переводы") & (df["oSum"] > 0)].index, axis=0, inplace=True)
-    if transfer == 0:
-        df.drop(df[df["category"] == "Переводы"].index, axis=0, inplace=True)
+    if category:
+        df.drop(df[df["category"] != category], axis=0, inplace=True)
+    else:
+        data["trans_plus"] = df[(df["category"] == "Переводы") & (df["oSum"] > 0)].loc[:, "oSum"].sum()
+        data["income"] = df[df["category"] == "Пополнения"].loc[:, "oSum"].sum()
+        df.drop(df[(df["category"] == "Переводы") & (df["oSum"] > 0)].index, axis=0, inplace=True)
+        if transfer == 0:
+            df.drop(df[df["category"] == "Переводы"].index, axis=0, inplace=True)
+        df.drop(df[df["category"] == "Пополнения"].index, axis=0, inplace=True)
+        df.drop(df[df["category"] == "Бонусы"].index, axis=0, inplace=True)
 
     if strange_transactions:
         df = df[(df["oSum"] < df["oSum"].quantile(.95)) & (df["oSum"] > df["oSum"].quantile(.05))]
-    df.drop(df[df["category"] == "Пополнения"].index, axis=0, inplace=True)
-    df.drop(df[df["category"] == "Бонусы"].index, axis=0, inplace=True)
     df["oSum"] = df["oSum"].abs()
     return df, data
 
@@ -113,6 +116,22 @@ def transactions_hist(df: pd.DataFrame, index: int):
     sns.barplot(data, x="sum", y="category")
     plt.savefig("static/plots/transactions_hist" + str(index) + ".png", bbox_inches="tight")
 
+## well, it actually can be one function wiht previous
+def category_hist(df: pd.DataFrame):
+    '''
+    This function build the hist plot: magazin - sum of transactions in df
+    '''
+    magazins = list(set(df["description"]))
+    oSum = []
+    for magazin in magazins:
+        oSum.append(df[df["description"] == magazin]["oSum"].abs().sum()) 
+    data = pd.DataFrame({"magazin" : magazins,
+                              "sum" : oSum})
+    plt.figure()
+    sns.barplot(data, x="sum", y="magazin")
+    plt.savefig("static/plots/category_hist.png", bbox_inches="tight")
+
+
 def sum_list(df_list: list[pd.DataFrame]):
     oSum = []
     periods = []
@@ -132,9 +151,9 @@ def periods_hist(df_list: list[pd.DataFrame]):
     sns.barplot(data, x="sum", y="date")
     plt.savefig("static/plots/periods_hist.png", bbox_inches="tight")
 
-def info_with_stat_period(df: pd.DataFrame, strange_operations: int, transfers: int, plot: int) -> dict:
+def info_with_stat_period(df: pd.DataFrame, strange_operations: bool, transfers: int, plot: int, category: str = None) -> dict:
     bonus = df[df["category"] == "Бонусы"].loc[: , "oSum"].sum()
-    df, data = selectRecords(df, transfers, strange_operations)
+    df, data = selectRecords(df, transfers, strange_operations, category=category)
     data["bonus"] = bonus
     if len(df.index) == 1:
         return -1
@@ -143,7 +162,10 @@ def info_with_stat_period(df: pd.DataFrame, strange_operations: int, transfers: 
     data["median"] = round(df["oSum"].median(), 2)
     data["end_period"] = df["date"].iloc[0]
     data["start_period"] = df["date"].iloc[-1]
-    transactions_hist(df, plot)
+    if category:
+        category_hist(df)
+    else:
+        transactions_hist(df, plot)
     return data
 
 def build_one_period(db, start_date: str, end_date: str, strange_operations: int, transfers: int) -> dict:
@@ -151,7 +173,7 @@ def build_one_period(db, start_date: str, end_date: str, strange_operations: int
     df = choose_period(df, end_date, start_date)
     return info_with_stat_period(df, strange_operations, transfers, 0)
 
-def build_group_period(db, start_date: str, end_date: str, strange_operations: int, transfers: int, period: int) -> dict:
+def build_group_period(db, start_date: str, end_date: str, strange_operations: bool, transfers: int, period: int) -> dict:
     df = getDFfromDB(db)
     df = choose_period(df, end_date, start_date)
     df_list = make_df_list(df, period)
@@ -169,3 +191,9 @@ def build_group_period(db, start_date: str, end_date: str, strange_operations: i
         data_list.append(data)
     return data_list
 
+def build_category(db, start_date: str, end_date: str, strange_operations: bool, transfers: int, category: str) -> dict:
+    df = getDFfromDB(db)
+    df = choose_period(df, end_date, start_date)
+    df, data = selectRecords(df, 0, strange_operations, category=category)
+    data = info_with_stat_period(df, category=category)
+    return data

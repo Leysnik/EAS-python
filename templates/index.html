@@ -16,8 +16,8 @@
             <button>Загрузить данные</button>
         </form>
         <div class="info-bd">
-            <div class="info-element"><span>Первая дата: </span><span>{{ dates["start_date"] }}</span></div>
-            <div class="info-element"><span></span>Последняя дата: <span>{{ dates["end_date"] }}</span></div>
+            <div class="info-element"><span>Первая дата: </span><span>{{ data["start_date"] }}</span></div>
+            <div class="info-element"><span></span>Последняя дата: <span>{{ data["end_date"] }}</span></div>
         </div>
         <form action="/build" method="GET" class="upload-form column" id="build_form">
             <div class="select-container"><span id="list_periods">Группа периодов</span><span id="one_period">Один период</span><span id="categories">Категории</span></div>
@@ -27,9 +27,9 @@
             </div>
             <div class="text-group">
                 <label for="start_date">Введите начальную дату:</label>
-                <input type="date" id="start_date" name="start_date" value="" min="{{ dates['end_date'] }}" max="{{ dates['start_date'] }}" required>
+                <input type="date" id="start_date" name="start_date" value="" min="{{ data['end_date'] }}" max="{{ data['start_date'] }}" required>
                 <label for="end_date">Введите конечную дату:</label>
-                <input type="date" id="end_date" name="end_date" value="" min="{{ dates['end_date'] }}" max="{{ dates['start_date'] }}" required>
+                <input type="date" id="end_date" name="end_date" value="" min="{{ data['end_date'] }}" max="{{ data['start_date'] }}" required>
             </div>
             <div class="text-group" id="periods_tau">
                 <label for="period">Введите количество дней в периоде:</label>
@@ -38,6 +38,15 @@
             <div class="radio-group" id="HLoperations">
                 <label for="HLtrue"><input type="radio" name="HLoperations" id="HLtrue" value="1" checked>Учесть высокие и низкие операции</label>
                 <label for="HLfalse"><input type="radio" name="HLoperations" id="HLfalse" value="0">Исключить высокие и низкие операции</label>
+            </div>
+            <div class="list-wrapper" id="categories_input">
+                <label for="category">
+                    Выберите категорию:
+                    <select name="category" id="category_select" required>
+                        {% for category in data["categories"] %}
+                        <option value="{{category}}">{{ category }}</option>
+                        {% endfor %}
+                    </select></label>
             </div>
             <input type="submit" value="Построить">
         </form>
