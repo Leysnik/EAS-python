@@ -133,6 +133,9 @@ def category_hist(df: pd.DataFrame):
 
 
 def sum_list(df_list: list[pd.DataFrame]):
+    '''
+    Support func to create sum for periods
+    '''
     osum = []
     periods = []
     for i in range(len(df_list)):
@@ -153,6 +156,9 @@ def periods_hist(df_list: list[pd.DataFrame]):
 
 def info_with_stat_period(df: pd.DataFrame, strange_operations: bool, transfers: int,
                           plot: int, category: str = None) -> dict:
+    '''
+    Support func to build data dict and plots for routes
+    '''
     bonus = df[df["category"] == "Бонусы"].loc[: , "oSum"].sum()
     df, data = select_records(df, transfers, strange_operations, category=category)
     data["bonus"] = bonus
