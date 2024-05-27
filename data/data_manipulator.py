@@ -96,8 +96,9 @@ def make_df_list(df: pd.DataFrame, days: int = 0) -> list[pd.DataFrame]:
         offset = pd.DateOffset(days=days)
     iterator = first_date - offset
     while iterator.date() >= last_date:
-        mask = (df["date"] > iterator.date()) & (df["date"] <= first_date.date())
-        df_list.append(df[mask])
+        mask = (df["date"] >= iterator.date()) & (df["date"] <= first_date.date())
+        if len(df.index) != 0:
+            df_list.append(df[mask])
         first_date -= offset
         iterator -= offset
     return df_list
@@ -123,6 +124,8 @@ def sum_list(df_list: list[pd.DataFrame]):
     osum = []
     periods = []
     for i in range(len(df_list)):
+        if len(df_list[i]) == 0:
+            continue
         osum.append(df_list[i]["oSum"].abs().sum())
         periods.append(df_list[i]["date"].iloc[-1])
     return periods, osum
@@ -143,6 +146,8 @@ def info_with_stat_period(df: pd.DataFrame, strange_operations: bool, transfers:
     '''
     Support func to build data dict and plots for routes
     '''
+    if len(df.index) == 0:
+        return -1
     bonus = df[df["category"] == "Бонусы"].loc[: , "oSum"].sum()
     df, data = select_records(df, transfers, strange_operations, category=category)
     data["bonus"] = bonus
