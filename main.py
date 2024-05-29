@@ -13,10 +13,14 @@ class Operation(db.Model):
     index = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date)
     oSum = db.Column(db.Float)
-    category = db.Column(db.String(100))
+    category = db.Column(db.Integer)
     cashback = db.Column(db.Float)
     mcc = db.Column(db.Integer)
     description = db.Column(db.String(100))
+
+class Categories(db.Model):
+    index = db.Column(db.Integer, primary_key=True)
+    category = db.Column(db.String(100), primary_key=True)
 
 
 MAIN_ROUTE = "index.html"
@@ -33,7 +37,7 @@ def index():
         data["start_date"] = str(db.session.query(Operation).first().date)
         data["end_date"] = str(db.session.query(Operation).order_by(Operation.index.desc())
                                .first().date)
-        categories = map(lambda x: x[0], db.session.query(Operation.category).distinct())
+        categories = map(lambda x: x[0], db.session.query(Categories.category).all())
         data["categories"] = categories
     return render_template(MAIN_ROUTE, data=data)
 

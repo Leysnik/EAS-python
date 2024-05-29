@@ -9,7 +9,9 @@ def get_df_from_db(db) -> pd.DataFrame:
     get db(sql) data to pandas DataFrame
     '''
     df = pd.read_sql_table("operation", db.engine.connect())
+    categories = pd.read_sql_table("categories", db.engine.connect())
     df['date'] = pd.to_datetime(df['date']).dt.date
+    df["category"] = df["category"].apply(lambda x: categories.loc[x, "category"])
     return df
 
 
@@ -19,6 +21,9 @@ def load_data(file, db) -> None:
     '''
     df = pd.read_excel(file)
     df = prepare_df(df)
+    categories = pd.DataFrame({"category" : list(set(df["category"]))})
+    categories.to_sql("categories", con=db.engine, if_exists="replace")
+    df["category"] = df["category"].apply(lambda x: categories[categories["category"] == x].index.tolist()[0])
     df.to_sql("operation", con=db.engine, if_exists='replace')
 
 def prepare_df(df: pd.DataFrame) -> pd.DataFrame:
