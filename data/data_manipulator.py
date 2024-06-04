@@ -4,7 +4,7 @@ import seaborn as sns
 
 import config
 
-def get_df_from_db(db) -> pd.DataFrame:
+def get_df_from_db(db):
     '''
     get db(sql) data to pandas DataFrame
     '''
@@ -15,7 +15,7 @@ def get_df_from_db(db) -> pd.DataFrame:
     return df
 
 
-def load_data(file, db) -> None:
+def load_data(file, db):
     '''
     Load xlsx file to db(sql)
     '''
@@ -26,7 +26,7 @@ def load_data(file, db) -> None:
     df["category"] = df["category"].apply(lambda x: categories[categories["category"] == x].index.tolist()[0])
     df.to_sql("operation", con=db.engine, if_exists='replace')
 
-def prepare_df(df: pd.DataFrame) -> pd.DataFrame:
+def prepare_df(df):
     '''
     This function prepare DataFrame for entry the db:
         Rename columns to valid names
@@ -39,8 +39,8 @@ def prepare_df(df: pd.DataFrame) -> pd.DataFrame:
     df.drop(config.USELESS_COLUMNS, axis = 1, inplace=True)
     return df
 
-def select_records(df: pd.DataFrame, transfer: int,
-                  strange_transactions: bool=True, category: str = None) -> pd.DataFrame:
+def select_records(df, transfer,
+                  strange_transactions=True, category=None):
     '''
     Select rows by parameters:
         transfer:
@@ -66,7 +66,7 @@ def select_records(df: pd.DataFrame, transfer: int,
     df["oSum"] = df["oSum"].abs()
     return df, data
 
-def last_month(df: pd.DataFrame) -> pd.DataFrame:
+def last_month(df):
     '''
     This function creates DataFrame for the last month 
     '''
@@ -75,7 +75,7 @@ def last_month(df: pd.DataFrame) -> pd.DataFrame:
     mask = (df["date"] > last_offset.date()) & (df["date"] <= last_date)
     return df[mask]
 
-def choose_period(df: pd.DataFrame, first_date: str, last_date: str) -> pd.DataFrame:
+def choose_period(df, first_date, last_date):
     '''
     This function creates DataFrame for the choosen period
     '''
@@ -84,7 +84,7 @@ def choose_period(df: pd.DataFrame, first_date: str, last_date: str) -> pd.DataF
     mask = (df['date'] >= last_date) & (df['date'] <= first_date)
     return df[mask]
 
-def make_df_list(df: pd.DataFrame, days: int = 0) -> list[pd.DataFrame]:
+def make_df_list(df, days=0):
     '''
     This function creates list of DataFrames grouped by day interval
         if days == 0 function groups rows by months 
@@ -108,7 +108,7 @@ def make_df_list(df: pd.DataFrame, days: int = 0) -> list[pd.DataFrame]:
         iterator -= offset
     return df_list
 
-def category_hist(df: pd.DataFrame, search: str, index: int):
+def category_hist(df, search, index):
     '''
     This function build the hist plot: magazin - sum of transactions in df
     '''
@@ -122,7 +122,7 @@ def category_hist(df: pd.DataFrame, search: str, index: int):
     sns.barplot(data, x="sum", y=search)
     plt.savefig("static/plots/transactions_hist" + str(index) + ".png", bbox_inches="tight")
 
-def sum_list(df_list: list[pd.DataFrame]):
+def sum_list(df_list):
     '''
     Support func to create sum for periods
     '''
@@ -135,7 +135,7 @@ def sum_list(df_list: list[pd.DataFrame]):
         periods.append(df_list[i]["date"].iloc[-1])
     return periods, osum
 
-def periods_hist(df_list: list[pd.DataFrame]):
+def periods_hist(df_list):
     '''
     This function build hist plot: start date of df - sum of df
     '''
@@ -146,8 +146,8 @@ def periods_hist(df_list: list[pd.DataFrame]):
     sns.barplot(data, x="sum", y="date")
     plt.savefig("static/plots/periods_hist.png", bbox_inches="tight")
 
-def info_with_stat_period(df: pd.DataFrame, strange_operations: bool, transfers: int,
-                          plot: int = 0, category: str = None) -> dict:
+def info_with_stat_period(df, strange_operations, transfers,
+                          plot=0, category=None):
     '''
     Support func to build data dict and plots for routes
     '''
@@ -169,14 +169,14 @@ def info_with_stat_period(df: pd.DataFrame, strange_operations: bool, transfers:
         category_hist(df, "category", plot)
     return data
 
-def build_one_period(db, start_date: str, end_date: str, strange_operations: int,
-                     transfers: int) -> dict:
+def build_one_period(db, start_date, end_date, strange_operations,
+                     transfers):
     df = get_df_from_db(db)
     df = choose_period(df, end_date, start_date)
     return info_with_stat_period(df, strange_operations, transfers, 0)
 
-def build_group_period(db, start_date: str, end_date: str, strange_operations: bool,
-                       transfers: int, period: int) -> dict:
+def build_group_period(db, start_date, end_date, strange_operations,
+                       transfers, period):
     df = get_df_from_db(db)
     df = choose_period(df, end_date, start_date)
     if len(df.index) == 0:
@@ -196,7 +196,7 @@ def build_group_period(db, start_date: str, end_date: str, strange_operations: b
         data_list.append(data)
     return data_list
 
-def build_category(db, start_date: str, end_date: str, strange_operations: bool, category: str) -> dict:
+def build_category(db, start_date, end_date, strange_operations, category):
     df = get_df_from_db(db)
     df = choose_period(df, end_date, start_date)
     data = info_with_stat_period(df, strange_operations, 0, 0, category=category)
