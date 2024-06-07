@@ -119,7 +119,12 @@ def category_hist(df, search, index):
     data = pd.DataFrame({search: search_list,
                               "sum" : osum})
     plt.figure()
-    sns.barplot(data, x="sum", y=search)
+    hist = sns.barplot(data, x="sum", y=search)
+    if search == "description":
+        y_label = "Магазины"
+    else:
+        y_label = "Категории"
+    hist.set(xlabel='Сумма трат', ylabel=y_label)
     plt.savefig("static/plots/transactions_hist" + str(index) + ".png", bbox_inches="tight")
 
 def mean_hist(df, search, index):
@@ -130,7 +135,12 @@ def mean_hist(df, search, index):
     data = pd.DataFrame({search: search_list,
                               "sum" : mean_values})
     plt.figure()
-    sns.barplot(data, x="sum", y=search)
+    hist = sns.barplot(data, x="sum", y=search)
+    if search == "description":
+        y_label = "Магазины"
+    else:
+        y_label = "Категории"
+    hist.set(xlabel='Средняя сумма трат', ylabel=y_label)
     plt.savefig("static/plots/mean_hist" + str(index) + ".png", bbox_inches="tight")
 
 def sum_list(df_list):
@@ -154,7 +164,8 @@ def periods_hist(df_list):
     data = pd.DataFrame({ "date" : periods,
                            "sum" : osum})
     plt.figure()
-    sns.barplot(data, x="sum", y="date")
+    hist = sns.barplot(data, x="sum", y="date")
+    hist.set(xlabel='Сумма трат', ylabel='Начало периода')
     plt.savefig("static/plots/periods_hist.png", bbox_inches="tight")
 
 def info_with_stat_period(df, strange_operations, transfers,
