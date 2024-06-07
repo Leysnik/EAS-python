@@ -99,6 +99,15 @@
                     </div>
                     {% endfor %}
                 </div>
+                <span class="subtitle">Графики средних трат</span>
+                <div class="plots">
+                    {% for data in data_list[1:] %}
+                    <div class="plot-container">
+                        <img src="../static/plots/mean_hist{{ data['plot'] }}.png" alt="one_period">
+                        <span>Период: {{ data["start_period"] }} - {{ data["end_period"] }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>

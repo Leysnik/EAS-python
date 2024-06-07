@@ -217,6 +217,7 @@ table {
 	align-items: center;
 }
 .subtitle{
+	margin-top: 10px;
 	font-weight: 700;
 	font-size: larger;
 }

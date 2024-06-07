@@ -122,6 +122,18 @@ def category_hist(df, search, index):
     sns.barplot(data, x="sum", y=search)
     plt.savefig("static/plots/transactions_hist" + str(index) + ".png", bbox_inches="tight")
 
+def mean_hist(df, search, index):
+    search_list = list(set(df[search]))
+    mean_values = []
+    for iterator in search_list:
+        mean_values.append(df[df[search] == iterator]["oSum"].abs().mean())
+    data = pd.DataFrame({search: search_list,
+                              "sum" : mean_values})
+    plt.figure()
+    sns.barplot(data, x="sum", y=search)
+    plt.savefig("static/plots/mean_hist" + str(index) + ".png", bbox_inches="tight")
+
+
 def sum_list(df_list):
     '''
     Support func to create sum for periods
@@ -165,8 +177,10 @@ def info_with_stat_period(df, strange_operations, transfers,
     data["start_period"] = df["date"].iloc[-1]
     if category:
         category_hist(df, "description", plot)
+        mean_hist(df, "description", plot)
     else:
         category_hist(df, "category", plot)
+        mean_hist(df, "category", plot)
     return data
 
 def build_one_period(db, start_date, end_date, strange_operations,
