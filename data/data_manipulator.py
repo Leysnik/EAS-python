@@ -23,7 +23,7 @@ def load_data(file, db):
     df = prepare_df(df)
     categories = pd.DataFrame({"category" : list(set(df["category"]))})
     categories.to_sql("categories", con=db.engine, if_exists="replace")
-    df["category"] = df["category"].apply(lambda x: categories[categories["category"] == x].index.tolist()[0])
+    df["category"] = df["category"].apply(lambda x: categories[categories["category"] == x].index[0])
     df.to_sql("operation", con=db.engine, if_exists='replace')
 
 def prepare_df(df):
@@ -132,7 +132,6 @@ def mean_hist(df, search, index):
     plt.figure()
     sns.barplot(data, x="sum", y=search)
     plt.savefig("static/plots/mean_hist" + str(index) + ".png", bbox_inches="tight")
-
 
 def sum_list(df_list):
     '''
