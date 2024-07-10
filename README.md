@@ -1,5 +1,5 @@
 # EAS-python
-Application for analyzing expenses on banking transactions
+Application for analyzing expenses on banking transactions (actual version on the branch "release")
 
 ## Introduction
 This application builds charts and reports on banking transactions based on uploading data from your personal account (tinkoff)
