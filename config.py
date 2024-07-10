@@ -12,7 +12,7 @@ COLUMN_NAMES = {"index" : "index",
                "Кэшбэк" : "cashback",
                "MCC" : "mcc",
                "Описание" : "description",
-                "Статус" : "status"
+               "Статус" : "status"
                }
 
 ##list with useless columns

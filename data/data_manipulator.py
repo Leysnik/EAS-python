@@ -117,7 +117,7 @@ def category_hist(df, search, index):
     for iterator in search_list:
         osum.append(df[df[search] == iterator]["oSum"].abs().sum())
     data = pd.DataFrame({search: search_list,
-                              "sum" : osum})
+                         "sum" : osum})
     plt.figure()
     hist = sns.barplot(data, x="sum", y=search)
     if search == "description":
@@ -133,7 +133,7 @@ def mean_hist(df, search, index):
     for iterator in search_list:
         mean_values.append(df[df[search] == iterator]["oSum"].abs().mean())
     data = pd.DataFrame({search: search_list,
-                              "sum" : mean_values})
+                         "sum" : mean_values})
     plt.figure()
     hist = sns.barplot(data, x="sum", y=search)
     if search == "description":
